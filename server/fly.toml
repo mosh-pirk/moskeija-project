@@ -16,5 +16,3 @@ primary_region = "arn"
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
-[experimental]
-  cmd = ["mongod", "--ipv6"]

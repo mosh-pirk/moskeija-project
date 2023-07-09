@@ -1,14 +1,15 @@
+const { IS_TEST_ENVIROMENT } = require('./config');
 
 const info = (...params) => {
-    console.log(...params)
+    if (!IS_TEST_ENVIROMENT) console.log(...params)
 }
 
 const warn = (...params) => {
-    console.warn(...params)
+    if (!IS_TEST_ENVIROMENT) console.warn(...params)
 }
 
 const error = (...params) => {
-    console.error(...params)
+    if (!IS_TEST_ENVIROMENT) console.error(...params)
 }
 
 module.exports = {

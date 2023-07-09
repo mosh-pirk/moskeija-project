@@ -1,23 +1,23 @@
 const personsRouter = require('express').Router()
 const Person = require('../models/person')
+const { error } = require("../utils/logger");
 
-personsRouter.get('/', (req, res) => {
-    Person.find({}).then(x => {
-        res.status(200).json(x)
-    })
+personsRouter.get('/', async (req, res) => {
+    const results = await Person.find({})
+    res.status(200).json(results)
 })
 
-personsRouter.get('/:id', (req, res, next) => {
-    Person.findById(req.params.id).then(person => {
-        if (person) res.json(person)
-        else res.status(400).json({ error: 'id not found' })
-    }).catch(error => {
-        console.log(error)
-        next(error)
-    })
+personsRouter.get('/:id', async (req, res, next) => {
+    try {
+        const result = await Person.findById(req.params.id);
+        res.json(result);
+    } catch (e) {
+        next(e)
+    }
 })
 
-personsRouter.post('/', (req, res) => {
+personsRouter.post('/', async (req, res, next) => {
+    // todo add validation
     const body = req.body;
     if (body.firstName === undefined) {
         return res.status(400).json({ error: 'firstName missing' })
@@ -27,19 +27,26 @@ personsRouter.post('/', (req, res) => {
         fatherName: body.fatherName,
     });
 
-    person.save().then(savedPerson => res.status(201).json(savedPerson))
+    try {
+        const saved = await person.save();
+        res.status(201).json(saved)
+    } catch (e) {
+        next(e)
+    }
+
 })
 
-personsRouter.delete('/:id', (req, res, next) => {
-    Person.findByIdAndRemove(req.params.id)
-        .then(() => {
-            req.status(204).end()
-        })
-        .catch(error => next(error))
+personsRouter.delete('/:id', async (req, res, next) => {
+    try {
+        await Person.findByIdAndRemove(req.params.id)
+        req.status(204).end()
+    } catch (e) {
+        next(error)
+    }
 })
 
 
-personsRouter.put('/:id', (req, res, next) => {
+personsRouter.put('/:id', async (req, res, next) => {
     const body = req.body
 
     const person = {
@@ -47,11 +54,12 @@ personsRouter.put('/:id', (req, res, next) => {
         fatherName: body.fatherName,
     }
 
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
-        .then(updatePerson => {
-            res.json(updatePerson)
-        })
-        .catch(error => next(error))
+    try {
+        const updated = await Person.findByIdAndUpdate(req.params.id, person, { new: true });
+        return res.json(updated)
+    } catch (e) {
+        next(e)
+    }
 })
 
 
