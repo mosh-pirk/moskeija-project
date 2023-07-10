@@ -1,5 +1,4 @@
 const logger = require('./logger')
-const { parseErrorMessage } = require("./helper_methods");
 
 const requestLogger = (request, response, next) => {
     logger.info('Method:', request.method)
@@ -14,12 +13,13 @@ const unknownEndpoint = (request, response) => {
 }
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+    console.info('error name: ', error.name)
+    console.info('error message: ', error.message)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
     } else if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: parseErrorMessage(error.message) })
+        return response.status(400).json({ error: error.message })
     }
     next(error)
 }

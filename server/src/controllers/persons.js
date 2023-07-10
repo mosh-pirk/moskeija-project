@@ -1,6 +1,5 @@
 const personsRouter = require('express').Router()
 const Person = require('../models/person')
-const { error } = require("../utils/logger");
 
 personsRouter.get('/', async (req, res) => {
     const results = await Person.find({})
@@ -41,7 +40,7 @@ personsRouter.delete('/:id', async (req, res, next) => {
         await Person.findByIdAndRemove(req.params.id)
         req.status(204).end()
     } catch (e) {
-        next(error)
+        next(e)
     }
 })
 

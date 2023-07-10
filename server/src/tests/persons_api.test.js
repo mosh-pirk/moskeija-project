@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const Person = require('../models/person')
 const app = require('../app')
-const { persons } = require("./helper/person");
 const api = supertest(app)
+const Person = require('../models/person')
+const { persons } = require("./helper/person");
 
 describe('Persons test', () => {
     test('Persons palutetaan Json muodossa ', async () => {
@@ -16,7 +16,6 @@ describe('Persons test', () => {
 
     test('Tietokannassa ei ole person:ita', async () => {
         const res = await api.get('/api/persons')
-
         expect(res.body).toHaveLength(1)
     })
 
