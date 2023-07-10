@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const User = require('../models/user')
+const {testUser} = require("./helper/data");
 
 describe('User test', () => {
 
@@ -14,18 +15,18 @@ describe('User test', () => {
     })
 
     test('Lisää Käyttäjä', async () => {
-        const response = await addNewUser(newUser);
-        expect(response.body.username).toBe(newUser.username)
-        expect(response.body.username).toBe(newUser.username)
+        const response = await addNewUser(testUser);
+        expect(response.body.username).toBe(testUser.username)
+        expect(response.body.username).toBe(testUser.username)
     })
 
     test('Voi Hakea kaikki käyttäjät', async () => {
         const { body } = await api.get('/api/users');
-        expect(body[0].username).toEqual(newUser.username)
+        expect(body[0].username).toEqual(testUser.username)
     })
 
     test('Käyttäjä on oltav uniiikki', async () => {
-        const response = await addNewUser2(newUser)
+        const response = await addNewUser2(testUser)
         expect(response.body.error).toContain(' to be unique');
     })
 
@@ -52,9 +53,4 @@ const addNewUser2 = async (newUser) => {
     return await api
         .post('/api/users')
         .send(newUser)
-}
-
-const newUser = {
-    username: 'Sami',
-    password: '123456',
 }
