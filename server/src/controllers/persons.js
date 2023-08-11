@@ -15,25 +15,35 @@ personsRouter.get('/:id', async (req, res, next) => {
     }
 })
 
-personsRouter.post('/', async (req, res, next) => {
-    // todo add validation
-    const body = req.body;
-    if (body.firstName === undefined) {
-        return res.status(400).json({ error: 'firstName missing' })
-    }
+function initPerson(body) {
     const person = new Person({
         firstName: body.firstName,
         fatherName: body.fatherName,
+        grandfatherName: body.grandfatherName,
+        motherName: body.motherName,
+        sureName: body.sureName,
+        birthday: new Date(body.birthday),
+        address: {
+            country: body.address.country,
+            city: body.address.city,
+            post: body.address.post,
+            street: body.address.street
+        },
+        isActive: body.isActive
     });
+    return person;
+}
 
+personsRouter.post('/', async (req, res, next) => {
     try {
-        const saved = await person.save();
-        res.status(201).json(saved)
-    } catch (e) {
-        next(e)
-    }
+        const person = initPerson(req.body);
 
-})
+        const savedPerson = await person.save();
+        res.status(201).json(savedPerson);
+    } catch (error) {
+        next(error);
+    }
+});
 
 personsRouter.delete('/:id', async (req, res, next) => {
     try {
@@ -46,13 +56,7 @@ personsRouter.delete('/:id', async (req, res, next) => {
 
 
 personsRouter.put('/:id', async (req, res, next) => {
-    const body = req.body
-
-    const person = {
-        firstName: body.firstName,
-        fatherName: body.fatherName,
-    }
-
+    const person = initPerson(req.body);
     try {
         const updated = await Person.findByIdAndUpdate(req.params.id, person, { new: true });
         return res.json(updated)
